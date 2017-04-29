@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>FRIEND FINDER SURVEY</title>
+	<script src="https://code.jquery.com/jquery.js"></script>
+</head>
+<body>
+	<h1>FRIEND FINDER SURVEY
+	<br>
+	<a href="/">To Home</a>
+	<br>
+	--------------------</h1>
+	<h2>Name<br>
+	<input type="text" id="Name"><br>
+	---------------------------<br>
+	<h2>Photo Link<br>
+	<input type="text" id="Photo"><br>
+	---------------------------<br>
+	Answer all questions bellow with an integer between 0 and 5
+	<br>
+	<br>
+	How eccentric are you?<br>
+	<input type="text" id="EcQuestionA"><br>
+	---------------------------<br>
+	How joyfull are you?<br>
+	<input type="text" id="JoyQuestionB"><br>
+	---------------------------<br>
+	How much does other peoples emotions concern you?<br>
+	<input type="text" id="EmQuestionC"><br>
+	---------------------------<br>
+	How positive are you?<br>
+	<input type="text" id="PosQuestionD"><br>
+	---------------------------<br>
+	How confident are you in your responces?<br>
+	<input type="text" id="ConfQuestionE"><br>
+	---------------------------<br>
+	<button type="submit" id="add-btn">Submit Responce</button>
+	</h2>
+	<input type="text" id="Test">
+	<h1>
+	--OUTPUT FOR BEST MATCH--<br>
+	<div id="NameOut"></div>
+	<div id="PhotoOut"></div>
+	<div id="Aout"></div>
+	<div id="Bout"></div>
+	<div id="Cout"></div>
+	<div id="Dout"></div>
+	<div id="Eout"></div>
+	</h1>
+
+<script type="text/javascript">
+	$("#add-btn").on("click", function(event){
+    	event.preventDefault();
+    	var newPerson = {
+    		Name: $("#Name").val().trim(),
+    		Photo: $("#Photo").val().trim(),
+    		Scores: [
+    			parseInt($("#EcQuestionA").val()),
+    			parseInt($("#JoyQuestionB").val()),
+    			parseInt($("#EmQuestionC").val()),
+    			parseInt($("#PosQuestionD").val()),
+    			parseInt($("#ConfQuestionE").val())]
+    	};
+    	console.log(newPerson);
+
+    	$.post("/api/new", newPerson)
+    	.done(function(data) {
+        	console.log(data);
+        	alert("Adding your data...");
+      	});
+
+      	//UNUSED
+      	//var searchedPerson = $("#Test").val().trim();
+
+      	//searchedPerson = searchedPerson.replace(/\s+/g, "").toLowerCase();
+
+      	//$.get("/api/" + searchedPerson, function(data) {
+        	//console.log(data);
+        	//if (data) {
+        		//$("#Modulus").text(data.Name+data.Photo+data.Scores);
+        	//}
+        	//else {
+        		//alert("PROBLEM")
+        	//}
+    	//});
+    	//UNUSED
+
+      	TempA=0;
+      	TempDar=[];
+      	TempLowest=100;
+
+    	//for differential
+    	$.get("/api/", function(data) {
+    		for (var i = 0; i < (data.length-1); i++){
+    			TempB=0;
+    			for (var x=0; x < data[i].Scores.length; x++){
+    				TempA=data[i].Scores[x]-newPerson.Scores[x];
+    				if (TempA<0){
+    					TempA=TempA*(-1);
+    				};
+    				//console.log(TempA);
+    				TempB=TempA+TempB
+    				//console.log(TempB);
+    			};
+    			console.log(TempB);
+    			TempDar.push(TempB);
+    		};
+    		//for lowest
+    		for (var y = 0; y < (data.length-1); y++){
+    			if (TempDar[y]<TempLowest){
+    				TempLowest=TempDar[y];
+    				Technate=data[y];
+    				console.log(Technate)
+    			}
+    		};
+    	//output
+    	$("#NameOut").text("Name: "+Technate.Name);
+    	$("#PhotoOut").text("Photo link: "+Technate.Photo);
+    	$("#Aout").text("Eccentric rating: "+Technate.Scores[0]);
+    	$("#Bout").text("Joyfull rating: "+Technate.Scores[1]);
+    	$("#Cout").text("Empathy rating: "+Technate.Scores[2]);
+    	$("#Dout").text("Positivity scores: "+Technate.Scores[3]);
+    	$("#Eout").text("Confidency rating: "+Technate.Scores[4]);
+    	});
+    });
+
+
+
+</script>
+</body>
+</html>
